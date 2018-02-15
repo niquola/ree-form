@@ -69,7 +69,7 @@
 (defn root-component []
   [:div
    (style
-    (let [nav-width 300]
+    (let [nav-width 200]
       [:body
        {:font-family "Roboto, sans-serif"}
        [:.topnav {:background-color "#3F51B5"

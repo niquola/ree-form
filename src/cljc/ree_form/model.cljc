@@ -27,17 +27,21 @@
 
 
 (defn mk-form-data [sch val]
+  (println "mk-form-data" (:type sch) sch val)
   (cond
     (= "form" (:type sch))
     (assoc sch :value 
            (reduce (fn [acc [k *sch]]
-                     (assoc acc k (assoc (dissoc *sch :value) :value (mk-form-data *sch (get val k))))) {} (:fields sch)))
+                     (let [*v (mk-form-data *sch (get val k))]
+                       (println ">> " k *sch "=>" *v)
+                       (assoc acc k *v)))
+                   {} (:fields sch)))
 
     (= "coll" (:type sch))
     (->> (map-indexed (fn [i *val] [i (mk-form-data (dissoc (:item sch) :value) *val)]) val)
          (into {}))
 
-    :else val))
+    :else (assoc sch :value val)))
 
 (defn get-value [form-data]
   (cond
@@ -67,11 +71,18 @@
           [] pth))
 
 
+(def interceptors {::trim str/trim})
+
+(defn apply-interceptors [ins v]
+  (reduce (fn [v i] ((get interceptors i) v)) v ins))
+
 (rf/reg-event-db
  ::on-change
  (fn [db [_ {fp :form-path p :path v :value}]]
    (let [pth (into fp (get-path p))
          d (get-in db pth)
+         inters (:interceptors d)
+         v (if inters (apply-interceptors inters v) v)
          vals (:validators d)
          d* (merge d {:value v
                       :errors (errors vals v)
