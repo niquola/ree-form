@@ -71,9 +71,7 @@
     (fn []
       [:div#debug
        [:style (garden/css
-                [:body
-                 [:#debug {:font-size (u/px 12)}]
-                 rform/awesome-styles])]
+                [:body [:#debug {:font-size (u/px 12)}]])]
 
        [:h4 "Schema"]
        [:pre (with-out-str (pprint/pprint form-schema))]
@@ -91,6 +89,7 @@
                                     :address {:city "SPb"
                                               :zip "166155"}}])
     (fn []
+      (println "rerender")
       [:div.row
        [:div.col
         [:h1 "Welcome to ree-form"]

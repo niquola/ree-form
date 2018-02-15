@@ -16,6 +16,7 @@
    [ui.routes :refer [routes href pages] :as ui-routes]
 
    [ui.index-page]
+   [ui.popup-page]
    ;; [ui.file-upload-page :as fup]
    ;; [ui.styles-page]
    ;; [ui.inputs-page]

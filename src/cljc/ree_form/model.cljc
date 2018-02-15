@@ -27,13 +27,11 @@
 
 
 (defn mk-form-data [sch val]
-  (println "mk-form-data" (:type sch) sch val)
   (cond
     (= "form" (:type sch))
     (assoc sch :value 
            (reduce (fn [acc [k *sch]]
                      (let [*v (mk-form-data *sch (get val k))]
-                       (println ">> " k *sch "=>" *v)
                        (assoc acc k *v)))
                    {} (:fields sch)))
 
@@ -75,6 +73,42 @@
 
 (defn apply-interceptors [ins v]
   (reduce (fn [v i] ((get interceptors i) v)) v ins))
+
+(rf/reg-event-db
+ ::set-state
+ (fn [db [_ {fp :form-path p :path s :state}]]
+   (let [pth (into fp (get-path p))
+         d (get-in db pth)
+         d* (update d :state (fn [x] (merge (or x {}) s)))]
+     (assoc-in db pth d*))))
+
+;; todo use fx for this
+(def global-popup (atom nil))
+
+(defn in-popup [ev]
+  (.stopPropagation ev)
+  (.stopImmediatePropagation (.-nativeEvent ev)))
+
+(rf/reg-event-db
+ ::open-popup
+ (fn [db [_ {fp :form-path p :path :as args}]]
+   (let [pth (into fp (get-path p))
+         d (get-in db pth)
+         d* (assoc-in d [:state :popup] true)]
+     (.removeEventListener js/document "click" @global-popup)
+     (let [f (fn [ev] (rf/dispatch [::close-popup args]))]
+       (reset! global-popup f)
+       (.addEventListener js/document "click" f))
+     
+     (assoc-in db pth d*))))
+
+(rf/reg-event-db
+ ::close-popup
+ (fn [db [_ {fp :form-path p :path}]]
+   (let [pth (into fp (get-path p))
+         d   (get-in db pth)
+         d*  (assoc-in d [:state :popup] false)]
+     (assoc-in db pth d*))))
 
 (rf/reg-event-db
  ::on-change
