@@ -17,6 +17,7 @@
 
    [ui.index-page]
    [ui.popup-page]
+   [ui.design-page]
    ;; [ui.file-upload-page :as fup]
    ;; [ui.styles-page]
    ;; [ui.inputs-page]
