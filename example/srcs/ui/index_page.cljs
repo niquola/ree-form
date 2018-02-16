@@ -2,6 +2,7 @@
   (:require
    [ree-form.core :as rform]
    [ree-form.model :as fmodel]
+   [ree-form.design :as design]
    [ui.routes :as ui-routes]
    [cljs.pprint :as pprint]
    [garden.core :as garden]
@@ -35,13 +36,14 @@
 (defn input [{fp :form-path p :path}]
   (let [data (rf/subscribe [::fmodel/form-path fp p])]
     (fn [_]
-      [:input.form-control {:value (:value @data)
-                            :class (when (:errors @data) "is-invalid")
-                            :on-blur #(rf/dispatch [::fmodel/on-blur {:form-path fp :path p}])
-                            :on-change #(rf/dispatch [::fmodel/on-change
-                                                      {:form-path fp
-                                                       :value (.. % -target -value)
-                                                       :path p}])}])))
+      [:input.re-box.border
+       {:value (:value @data)
+        :class (when (:errors @data) "is-invalid")
+        :on-blur #(rf/dispatch [::fmodel/on-blur {:form-path fp :path p}])
+        :on-change #(rf/dispatch [::fmodel/on-change
+                                  {:form-path fp
+                                   :value (.. % -target -value)
+                                   :path p}])}])))
 
 (defn checkbox [{fp :form-path p :path :as opts}]
   (let [data (rf/subscribe [::fmodel/form-path fp p])]
@@ -50,7 +52,7 @@
                                                {:form-path fp
                                                 :value (not (:value @data)) 
                                                 :path p}])}
-       [:label (:label opts)
+       [:label.re-box.label (:label opts)
         " "
         [:span.check {:style {:font-size "30px" :cursor "pointer"}}
          (if (:value @data) "☑" "☐")]]])))
@@ -71,7 +73,7 @@
     (fn []
       [:div#debug
        [:style (garden/css
-                [:body [:#debug {:font-size (u/px 12)}]])]
+                [:* [:#debug {:font-size (u/px 12)}]])]
 
        [:h4 "Schema"]
        [:pre (with-out-str (pprint/pprint form-schema))]
@@ -91,41 +93,53 @@
     (fn []
       (println "rerender")
       [:div.row
-       [:div.col
+       [:style (garden/css [[:.label {:width "10em"
+                                      :text-align "right"}]
+                            [:.form {:background-color "#f1f1f1"}]
+                            design/style])]
+       [:div.col.form
         [:h1 "Welcome to ree-form"]
-        [:div.form-group
-         [:label "Name:" [:small " (clear input)"]]
+        [:div.re-row
+         [:label.re-box.label "Name:"]
          [input {:form-path form-path :path [:name]}]
          [errors {:form-path form-path :path [:name]}]]
 
-        [:div.form-group
-         [:label "Given:" [:small " (focus and blur)"]]
+        [:div.re-row
+         [:label.re-box.label "Given:"]
          [input {:form-path form-path :path [:given]}]
-         [errors {:form-path form-path :path [:given]}]]
+         [errors {:form-path form-path :path [:given]}]
+         [:small " (focus and blur)"]
+         ]
 
-        [:div.form-group
-         [:label "Email:" [:small " (enter non-email string)"]]
+        [:div.re-row
+         [:label.re-box.label "Email:"]
          [input {:form-path form-path :path [:email]}]
-         [errors {:form-path form-path :path [:email]}]] 
+         [errors {:form-path form-path :path [:email]}]
+         [:small " (enter non-email string)"]
+         ]
 
-        [:div.form-group
-         [:label "Home page" [:small " (with trim interceptor - try white spaces)"]]
+        [:div.re-row
+         [:label.re-box.label "Home page"]
          [input {:form-path form-path :path [:homepage]}]
-         [errors {:form-path form-path :path [:homepage]}]] 
+         [errors {:form-path form-path :path [:homepage]}]
+         [:small " (with trim interceptor - try white spaces)"]
+         ]
 
-        [:div.form-group
+
+
+        [:div.re-row
          [checkbox {:form-path form-path :path [:is-admin]
-                    :label "Admin (custom widget)"}]]
+                    :label "Admin"}]]
 
         [:h3 "Address"]
-        [:div.form-group
-         [:label "City:" [:small " (focus and blur)"]]
+        [:div.re-row
+         [:label.re-box.label "City:"]
          [input {:form-path form-path :path [:address :city]}]
-         [errors {:form-path form-path :path [:address :city]}]]
-        (fmodel/get-path [:address :city])
+         [errors {:form-path form-path :path [:address :city]}]
+         [:small " (focus and blur)"]]
 
-        [:div.form-group
-         [:label "ZIP:"]
+        [:div.re-row
+         [:label.re-box.label "ZIP:"]
          [input {:form-path form-path :path [:address :zip]}]
          [errors {:form-path form-path :path [:address :zip]}]]
 
