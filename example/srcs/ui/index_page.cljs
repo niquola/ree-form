@@ -36,7 +36,7 @@
 (defn input [{fp :form-path p :path}]
   (let [data (rf/subscribe [::fmodel/form-path fp p])]
     (fn [_]
-      [:input.re-box.border
+      [:input.re-box.underline
        {:value (:value @data)
         :class (when (:errors @data) "is-invalid")
         :on-blur #(rf/dispatch [::fmodel/on-blur {:form-path fp :path p}])
@@ -97,7 +97,7 @@
                                       :text-align "right"}]
                             [:.form {:background-color "#f1f1f1"}]
                             design/style])]
-       [:div.col.form
+       [:div.col.re-contrast
         [:h1 "Welcome to ree-form"]
         [:div.re-row
          [:label.re-box.label "Name:"]

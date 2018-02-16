@@ -58,9 +58,9 @@
                             :padding {:top (u/px 10)
                                       :bottom (u/px 10)
                                       :left (u/px 20)}}
-                [:&.active {:color "#007bff"
-                            :background-color "#eee"
-                            :border-color "#007bff"}]]])
+                [:&.active {:color "hsla(226, 98%, 48%, 0.7)"
+                            :background-color "hsla(225.51724137931035, 21.80451127819549%, 26.078431372549016%, 0.05)"
+                            :border-color "hsla(226, 98%, 48%, 0.7)"}]]])
        (doall
         (for [[i p] (sort-by (fn [[_ x]] (:w x)) @ui-routes/pages)]
           [:a.navitem {:key i
@@ -74,8 +74,7 @@
     (let [nav-width 200]
       [:body
        {:font-family "Roboto, sans-serif"}
-       [:.topnav {:background-color "#3F51B5"
-                  :color "white"}
+       [:.topnav {:border {:bottom "1px solid hsla(225.51724137931035, 21.80451127819549%, 26.078431372549016%, 0.2)"}}
         [:.brand {:display "inline-block"
                   :font-size (u/px 30)
                   :font-weight "bold"
@@ -87,10 +86,9 @@
                       :top (u/px 67)
                       :bottom 0
                       :left 0}]
-       [:.pane {:margin {:left (u/px (+ nav-width 20))
-                         :top (u/px 20)
+       [:.pane {:margin {:left (u/px (+ nav-width 100))
                          :right (u/px 40)}
-                :padding (u/px 40)}]
+                :padding (u/px 20 40)}]
        [:h1 {:margin-bottom (u/px 30)
              :font-weight :normal
              :font-size (u/px h3)
