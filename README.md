@@ -4,6 +4,13 @@
 
 A ClojureScript form toolbox
 
+## Goals
+
+* Strong design system
+* Data driven form model
+* Set of native re-frame/reagent widgets
+* Real world cases
+
 
 ## Usage
 
