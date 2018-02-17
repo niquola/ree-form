@@ -74,13 +74,19 @@
 (defn apply-interceptors [ins v]
   (reduce (fn [v i] ((get interceptors i) v)) v ins))
 
+(defn set-state [db {fp :form-path p :path s :state}]
+  (let [pth (into fp (get-path p))
+        d (get-in db pth)
+        d* (update d :state (fn [x] (merge (or x {}) s)))]
+    (assoc-in db pth d*)))
+
+
 (rf/reg-event-db
  ::set-state
- (fn [db [_ {fp :form-path p :path s :state}]]
-   (let [pth (into fp (get-path p))
-         d (get-in db pth)
-         d* (update d :state (fn [x] (merge (or x {}) s)))]
-     (assoc-in db pth d*))))
+ (fn [db [_ arg]] (set-state db arg)))
+
+(defn get-state [db {fp :form-path p :path}]
+  (:state (get-in db (into fp (get-path p)))))
 
 ;; todo use fx for this
 (def global-popup (atom nil))
@@ -169,3 +175,32 @@
  (fn [db [_ fp]]
    (let [cur (r/cursor db fp)]
      (reaction (get-value @cur)))))
+
+(rf/reg-event-db
+ ::item-down
+ (fn [db [_ {fp :form-path p :path :as arg}]]
+   (let [s (get-state db arg)
+         idx (or (:selection s) 0)]
+     (set-state db (assoc arg :state {:selection (inc idx)})))))
+
+(rf/reg-event-db
+ ::item-up
+ (fn [db [_ {fp :form-path p :path :as arg}]]
+   (let [s (get-state db arg)
+         idx (or (:selection s) 0)]
+     (set-state db (assoc arg :state {:selection (dec idx)})))))
+
+(rf/reg-event-db
+ ::item-select
+ (fn [db [_ {fp :form-path p :path}]]
+   db))
+
+(defn set-items [db {fp :form-path p :path is :items}]
+  (let [pth (into fp (get-path p))
+        d   (get-in db pth)
+        d*  (update d :state assoc :items is)]
+    (assoc-in db pth d*)))
+
+(rf/reg-event-db
+ ::set-items
+ (fn [db [_ args]] (set-items db args)))

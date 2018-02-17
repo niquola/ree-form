@@ -31,6 +31,14 @@
    [:.re-row {:display "flex"
               :padding {:top (u/px 5)
                         :bottom (u/px 5)}}]
+   [:.hp {:padding {:left "1em" :right "1em"}}]
+   [:.hm {:margin {:left "0.5em" :right "0.5em"}}]
+   [:.--hm {:margin {:left (u/px 2) :right (u/px 2)}}]
+   [:.lm {:margin {:left (u/px* 1.5 w)}}]
+   [:.rm {:margin {:right (u/px* 1.5 w)}}]
+   [:.ll {:margin {:left (u/px -1)}}]
+   [:.re-col {:display "flex"
+              :flex-direction "column"}]
    [(keyword ".re-box > .re-box > .re-box")
     {:line-height (u/px (+ (* h 2) 4))
      :padding {:top (u/px- (/ h 2) 2)
@@ -67,26 +75,35 @@
              :padding {:left (u/px* 2 w) :right (u/px* 2 w)}}]
 
    [:.re-contrast {:background {:color (c/rgba (conj clr 0.05))}}]
+   #_[(keyword ".re-box+.re-box.icon")
+    {:margin {:left (u/px -w)}}]
+
    [:.re-box
     {:display "flex"
      :line-height (u/px* h 4)
      :background-color "white"
-     :margin {:right (u/px* 1.5 w)}
-
      :border "none"
      :box-shadow "none"
      :outline "none"
      :padding {:top (u/px- (/ h 2) 1)
-               :left (u/px* 1.5 w)
-               :right (u/px* 1.5 w)
                :bottom (u/px- (/ h 2) 1)}}
+    [:&:focus {:border {:color "hsla(226, 98%, 48%, 0.7)"}}]
     [:&.contrast {:background {:color (c/rgba (conj clr 0.05))}}]
-    [(keyword ".re-box:last-child") {:margin {:right 0}}]
     [:&.label {:display "block"
                :text-align "right"}]
 
-    [:&.radius {:border-radius ".25rem"}]
-    [:&.circle {:border-radius "100px"}]
+    [:&.radius {:border-radius ".25rem"}
+     [:.re-box.icon {:border-radius ".25rem"}]]
+
+    [:&.circle {:border-radius "100px"}
+     [:.re-box.icon {:border-radius "100px"}]]
+
+    [:&.text- {:color (c/rgba (conj clr 0.7))}]
+    [:&.text-- {:color (c/rgba (conj clr 0.5))}]
+
+    [:&.l1 {:width "4em" :display "block" :text-align "right"}]
+    [:&.l2 {:width "8em" :display "block" :text-align "right"}]
+    [:&.l3 {:width "12em" :display "block" :text-align "right"}]
 
     [:&.icon
      {:width (u/px (+ (* h 5) 2))
@@ -96,10 +113,9 @@
                 :right 0
                 :bottom (u/px- (/ h 2) 1)}
       :display "block"
-      :text-align "center"
-      :color (c/rgba (conj clr 0.5))}]
+      :text-align "center"}]
 
-    [:&.lm {:margin {:left (u/px* 1.5 w)}}]
+    
     [:&.border.icon
      {:padding {:left 0
                 :right 0}}]
@@ -124,11 +140,18 @@
                        :style "solid"
                        :color (c/rgba (conj clr 0.4))}}
       :padding {:top (u/px- (/ h 2) 1)
-                :left (u/px* 2 w)
-                :right (u/px* 2 w)
                 :bottom (u/px- (/ h 2) 2)}}]
 
     [:&.border
+     {:border {:width (u/px 1)
+               :style "solid"
+               :color (c/rgba (conj clr 0.2))}
+      :padding {:top (u/px- (/ h 2) 2)
+                :bottom (u/px- (/ h 2) 2)}}
+     [:&:focus {:border {:color "hsla(226, 98%, 48%, 0.7)"}}]
+     ]
+
+    [:&.border-
      {:border {:width (u/px 1)
                :style "solid"
                :color (c/rgba (conj clr 0.4))}
