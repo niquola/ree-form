@@ -126,20 +126,7 @@
            [:div.re-box.icon.circle.border "▾"]
            [:div.re-box "Nikolai"]
            [:div.re-box.icon "✕"]]]]
-        [:div.col [:pre (with-out-str (cljs.pprint/pprint @data))]]]
-
-       
-
-
-
-
-
-
-       ]
-
-
-
-      )))
+        [:div.col [:pre (with-out-str (cljs.pprint/pprint @data))]]]])))
 
 (ui-routes/reg-page
  :selects {:title "Selects"

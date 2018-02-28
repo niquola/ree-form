@@ -51,15 +51,154 @@
    (assoc-in db fpth (fmodel/mk-form-data form-schema v))))
 
 
+(defmulti mixin (fn [k style]
+                  (if (vector? k) (first k) k)))
+
+(defmethod mixin
+  :bordered
+  [_ style]
+  (assoc style :border {:width (u/px 1)
+                        :style "solid"
+                        :color "#ddd"}))
+
+(defmethod mixin
+  :radius
+  [_ style]
+  (merge-with merge style {:border
+                           {:top {:left {:radius (u/px 5)}
+                                  :right {:radius (u/px 5)}}
+                            :bottom {:left {:radius (u/px 5)}
+                                     :right {:radius (u/px 5)}}}}))
+
+
+(defmethod mixin
+  :underline
+  [_ style]
+  (assoc style :border {:bottom {:width (u/px 1)
+                                 :style "solid"
+                                 :color "#ddd"}}))
+
+(defmethod mixin
+  :flex-row
+  [_ style] (assoc style :display "flex"))
+
+(defmethod mixin
+  :small [_ style] (assoc style :font-size (u/px 12)))
+
+(defmethod mixin
+  :xsmall [_ style] (assoc style :font-size (u/px 10)))
+
+(defmethod mixin
+  :flex-col
+  [_ style] (merge style {:display "flex" :flex-direction "column"}))
+
+(defmethod mixin
+  :contrast
+  [_ style] (merge style {:background "#f6f6f6"}))
+
+
+(def pallet {:gray "gray"})
+
+(defmethod mixin :f  [[_ x] style] (assoc style :flex x))
+(defmethod mixin :w  [[_ x] style] (assoc style :width (u/px* 5 x)))
+(defmethod mixin :c  [[_ c] style] (assoc style :color (get pallet c)))
+(defmethod mixin :t  [[_ a] style] (assoc style :text-align a))
+(defmethod mixin :ml [_ style] (merge-with merge style {:margin  {:left "5px"}}))
+(defmethod mixin :mr [_ style] (merge-with merge style {:margin  {:right "5px"}}))
+(defmethod mixin :mh [_ style] (merge-with merge style {:margin  {:right "5px" :left "5px"}}))
+(defmethod mixin :ph [_ style] (merge-with merge style {:padding {:right "5px" :left "5px"}}))
+(defmethod mixin :pv [_ style] (merge-with merge style {:padding {:top "5px" :bottom "5px"}}))
+(defmethod mixin :mv [_ style] (merge-with merge style {:margin {:top "5px" :bottom "5px"}}))
+(defmethod mixin :-mt [_ style] (merge-with merge style {:margin {:top "-1px"}}))
+(defmethod mixin :-ml [_ style] (merge-with merge style {:margin {:left "-1px"}}))
+(defmethod mixin :p  [_ style] (merge-with merge style {:padding {:right "5px"
+                                                                      :top "5px"
+                                                                      :bottom "5px"
+                                                                      :left "5px"}}))
+
+
+(defn mixins [xs]
+  (reduce (fn [acc x] (mixin x acc)) {} xs))
+
+(def styles
+  (garden/css
+   [
+    [:input {:border "none" :padding 0 :margin 0}]
+    [:.xcol (mixins [:flex-col [:f 1]])]
+    [:.xrow (mixins [:flex-row])]
+    [:.xform (mixins [[:w 100]])]
+    [:.comment (mixins [:mv [:c :gray] :xsmall])]
+    [:.normal
+     [:label (mixins [:p :mr [:c :gray] [:t :right] [:w 30]])]
+     [:input (mixins [:bordered [:f 1] :p :mr :contrast :radius])]]
+
+    [:.exel
+     [:input (mixins [:bordered [:f 1] :p :-mt :-ml :contrast])]]
+
+    [:div.options (mixins [:bordered :radius :mv])
+     [:div.option (mixins [:underline :p])
+      [:&:hover (mixins [:contrast])]]]
+
+    [:.material
+     [:label (mixins [:pv [:c :gray] [:t :right] [:w 30]])]
+     [:input  (mixins [:pv :underline [:f 1]])]]]))
+
+
 (defn index []
-  (let [form-path [:forms :popups]
-        data (rf/subscribe [::fmodel/form-path form-path])]
-    (rf/dispatch [::init form-path {:name "Nikolai"
-                                    :email "niquola@gmail.com"
-                                    :is-admin true
-                                    :address {:city "SPb"
-                                              :zip "166155"}}])
-    (fn []
+  (fn []
+    [:div
+     [:h1 "Design system"]
+     [:style styles]
+
+     [:div.xform.normal
+      [:div.xcol
+       [:div.xrow
+        [:label "Given"]
+        [:div.xcol.xrow
+         [:input.box {:placeholder "input"}]
+         [:div.comment "Some notes"]]]
+       [:div.xrow
+        [:label "Family"]
+        [:input.box {:placeholder "input"}]]
+       ]]
+
+     [:br]
+
+     
+     [:div.exel
+      [:div.xcol
+       [:div.xrow
+        [:input]
+        [:input]
+        [:input]
+        [:input]
+        [:input]]
+       [:div.xrow
+        [:input]
+        [:input]
+        [:input]
+        [:input]
+        [:input]]]]
+
+     [:br]
+
+     [:div.xform.material
+      [:div.xcol
+       [:div.xrow
+        [:label "Given"]
+        [:div.xcol.xrow
+         [:input.box {:placeholder "input"}]
+         [:div.comment "Some notes"]]]
+       [:div.xrow
+        [:label "Family"]
+        [:div.xcol
+         [:input {:placeholder "input"}]
+         [:div.options
+          [:div.option "Option 1"]
+          [:div.option "Option 1"]
+          [:div.option "Option 1"]]]]]]])
+
+  #_(fn []
       [:div 
        [:style (garden/css design/style)]
 
@@ -225,14 +364,14 @@
         [:div.re-box.border.f5 ".f5"]
         [:div.re-box.border.f6 ".f6"]]
        #_[:ul
-        [:li "borders: border, underline, none"]
-        [:li "background: white, contrast, selection, inverse"]
-        [:li "hover, focus & selection"]
-        [:li "size: small, normal, large"]
-        [:li "radius & cycle"]
-        [:li "grid model"]
-        [:li "shadows & popups"]
-        [:li "nesting & ligatures"]]
+          [:li "borders: border, underline, none"]
+          [:li "background: white, contrast, selection, inverse"]
+          [:li "hover, focus & selection"]
+          [:li "size: small, normal, large"]
+          [:li "radius & cycle"]
+          [:li "grid model"]
+          [:li "shadows & popups"]
+          [:li "nesting & ligatures"]]
 
        [:br]
 
@@ -264,7 +403,7 @@
 
          ]]]
 
-      )))
+      ))
 
 (ui-routes/reg-page
  :design {:title "Design System"

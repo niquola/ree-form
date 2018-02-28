@@ -19,6 +19,8 @@
    [ui.popup-page]
    [ui.design-page]
    [ui.select-page]
+   [ui.shape]
+   [ui.cominator]
    ;; [ui.file-upload-page :as fup]
    ;; [ui.styles-page]
    ;; [ui.inputs-page]
